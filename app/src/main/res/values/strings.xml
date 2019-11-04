@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">CGPA CALCULATOR</string>
+    <string name="login_to">Login To</string>
+    <string name="email">Email Address</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="cgpa_calculator">CGPA CALCULATOR</string>
+    <string name="forgot_password">RESET PASSWORD</string>
+    <string name="register">REGISTER</string>
+    <string name="phone_number">Phone number</string>
+</resources>
