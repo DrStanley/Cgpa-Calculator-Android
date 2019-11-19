@@ -1,7 +1,9 @@
 package com.example.stanley.cgpacalculator;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -14,10 +16,25 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class GPAActivity extends AppCompatActivity {
 
@@ -28,12 +45,20 @@ public class GPAActivity extends AppCompatActivity {
     List<String> grade;
     List<Integer> unit;
     List<Integer> point;
+    private ProgressDialog npd;
     Spinner spinner1, spinner3, spinner2;
     TextView textViewName, textViewNum, d, e, f;
-    int a;
+    int a;                long chi;
+    int tcl=0,tgp=0,noCO=0;
+
     double totalUnit, totatPoint;
-    Button next, back, finish;
+    Button next, finish;
     EditText cour, uni;
+    FirebaseAuth firebaseAuth;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    DatabaseReference databaseReference2;
+    DatabaseReference databaseReference3;
 
 
     @Override
@@ -48,7 +73,6 @@ public class GPAActivity extends AppCompatActivity {
         cour = findViewById(R.id.cousrse_code);
         uni = findViewById(R.id.unit);
         next = findViewById(R.id.nextP);
-        back = findViewById(R.id.previous);
         finish = findViewById(R.id.check);
         d = findViewById(R.id.see);
         e = findViewById(R.id.see2);
@@ -58,9 +82,19 @@ public class GPAActivity extends AppCompatActivity {
         point = new ArrayList<>();
         course = new ArrayList<>();
         grade = new ArrayList<>();
+
+        npd = new ProgressDialog(this);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+        databaseReference2 = firebaseDatabase.getReference();
+        databaseReference3 = firebaseDatabase.getReference();
+        databaseReference2 = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
+                .child("Results").child("CGPA");
+
         adds();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        back.setEnabled(false);
         String eamval = getIntent().getStringExtra("aha");
         textViewName.setText(eamval);
 
@@ -79,19 +113,48 @@ public class GPAActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         spinner3.setAdapter(adapter3);
 
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    if (dataSnapshot.getValue()!=null) {
+                        tcl = dataSnapshot.child("TCL").getValue(Integer.class);
+                        tgp = dataSnapshot.child("TGP").getValue(Integer.class);
+                        noCO = dataSnapshot.child("Total_courses").getValue(Integer.class);
+
+                    }
+
+                } catch (Exception f) {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        databaseReference3 = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
+                .child("Results").child("Levels");
+        databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                chi = dataSnapshot.getChildrenCount();
+                Toast.makeText(GPAActivity.this, ""+chi, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 //        listener for the next and finish button
-
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 forward();
-            }
-        });
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backward();
             }
         });
         finish.setOnClickListener(new View.OnClickListener() {
@@ -100,29 +163,154 @@ public class GPAActivity extends AppCompatActivity {
                 if (finish.getText().equals("Finished")) {
                     see();
                 } else {
-                    Toast.makeText(GPAActivity.this, "Saving", Toast.LENGTH_SHORT).show();
+                    saveResult();
                 }
             }
         });
 
     }
 
-    private void backward() {
-        int size = course.size();
-        a -= 1;
-        if (course.size() < 0 | a < 0) {
-            Toast.makeText(this, "You have reach the end", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void saveResult() {
+        databaseReference = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
+                .child("Results").child(spinner1.getSelectedItem().toString()+"00")
+                .child(spinner2.getSelectedItem().toString());
 
-        cour.setText(""+course.get(size-a));
-        uni.setText(""+unit.get(size-a));
+        Map<String, Object> updates = new HashMap<String,Object>();
+        npd.setMessage("Saving Result Please wait...");
+        npd.show();
+        npd.setCanceledOnTouchOutside(false);
 
+        updates.put("courses",course );
+        updates.put("units", unit);
+        updates.put("grades", grade);
+        updates.put("TCL", totalUnit);
+        updates.put("Level", spinner1.getSelectedItem().toString()+"00");
+        updates.put("TGP", totatPoint);
+        updates.put("Tcourses", a);
+        updates.put("grades", grade);
+        databaseReference.updateChildren(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+
+                chi++;
+                Map<String, Object> updates3 = new HashMap<String, Object>();
+                updates3.put(chi+"", spinner1.getSelectedItem().toString()+"00");
+                databaseReference3.updateChildren(updates3).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        npd.dismiss();
+                        AlertDialog alertDialog = new AlertDialog.Builder(GPAActivity.this).create();
+                        alertDialog.setTitle("Alert");
+                        alertDialog.setIcon(R.drawable.ic_error_black_24dp);
+                        alertDialog.setMessage("Error Saving: " + e.getMessage() + "\nCause: " + e.getCause());
+                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        alertDialog.show();
+                    }
+                });
+
+                tcl +=totalUnit;
+                tgp +=totatPoint;
+                noCO +=a;
+                Toast.makeText(GPAActivity.this, tcl+" and "+tgp, Toast.LENGTH_SHORT).show();
+
+                Map<String, Object> updates2 = new HashMap<String, Object>();
+                updates2.put("TCL", tcl);
+                updates2.put("TGP", tgp);
+                updates2.put("Total_courses", noCO);
+                databaseReference2.updateChildren(updates2).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        npd.dismiss();
+                        AlertDialog alertDialog = new AlertDialog.Builder(GPAActivity.this).create();
+                        alertDialog.setTitle("Alert");
+                        alertDialog.setIcon(R.drawable.ic_error_black_24dp);
+                        alertDialog.setMessage("Error Saving: " + e.getMessage() + "\nCause: " + e.getCause());
+                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        alertDialog.show();
+                    }
+                });
+                npd.dismiss();
+
+                AlertDialog alertDialog = new AlertDialog.Builder(GPAActivity.this).create();
+                alertDialog.setTitle("Alert");
+                alertDialog.setMessage("Results saved\nGo to 'Result' in the sub menu to view saved ones");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                enab(false);
+                            }
+                        });
+                alertDialog.show();
+                finish.setEnabled(false);
+                finish.setBackgroundColor(getResources().getColor(R.color.gray));
+                finish.setTextColor(getResources().getColor(R.color.colorPrimary));
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                npd.dismiss();
+                AlertDialog alertDialog = new AlertDialog.Builder(GPAActivity.this).create();
+                alertDialog.setTitle("Alert");
+                alertDialog.setIcon(R.drawable.ic_error_black_24dp);
+                alertDialog.setMessage("Error Saving: " + e.getMessage() + "\nCause: " + e.getCause());
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+            }
+        });
 
     }
 
+//    private void backward() {
+//        try {
+//            int size = course.size();
+//            Toast.makeText(this, a+" this", Toast.LENGTH_SHORT).show();
+////        a -= 1;
+//            if (course.size() < 0 | a < 0) {
+//                Toast.makeText(this, "You have reach the end", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            cour.setText("" + course.get(size - a));
+//            uni.setText("" + unit.get(size - a));
+//            spinner3.setSelection(position(grade.get(size - a).charAt(0)));
+//            a--;
+//            textViewNum.setText(Integer.toString(a));
+//
+//        } catch (Exception e) {
+//            Toast.makeText(this, "You have reach the end", Toast.LENGTH_SHORT).show();
+//
+//        }
+//
+//    }
+
     private void forward() {
         try {
+//            if (course.size() > 0 & a != course.size()) {
+//                a++;
+//                course.add(a,cour.getText().toString());
+//                grade.add(a,spinner3.getSelectedItem().toString());
+//                unit.add(a,Integer.parseInt(uni.getText().toString()));
+//                textViewNum.setText(Integer.toString(a));
+//                return;
+//            }
 
             if (TextUtils.isEmpty(cour.getText().toString())) {
                 //email is empty
@@ -145,7 +333,6 @@ public class GPAActivity extends AppCompatActivity {
                 return;
             }
 
-            back.setEnabled(true);
 
             a = a + 1;
             textViewNum.setText(Integer.toString(a));
@@ -156,7 +343,10 @@ public class GPAActivity extends AppCompatActivity {
             cour.setText(null);
             uni.setText(null);
             spinner3.setSelection(0);
+            cour.requestFocus();
+
             System.out.println(course + " and " + grade + " plus " + unit);
+
 
         } catch (Exception e) {
             androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(GPAActivity.this).create();
@@ -199,6 +389,8 @@ public class GPAActivity extends AppCompatActivity {
             totatPoint += point.get(t);
         }
         double gpa = totatPoint / totalUnit;
+        DecimalFormat df = new DecimalFormat("#.##");
+        gpa = Double.valueOf(df.format(gpa));
 
         for (int i = 0; i < course.size(); i++) {
             d.append("\n\n" + course.get(i));
@@ -224,6 +416,25 @@ public class GPAActivity extends AppCompatActivity {
         alertDialog.show();
 
     }
+
+//    int position(char tex) {
+//        int a = 0;
+//        if (tex == 'A') {
+//            a = 1;
+//        } else if (tex == 'B') {
+//            a = 2;
+//        } else if (tex == 'C') {
+//            a = 3;
+//        } else if (tex == 'D') {
+//            a = 4;
+//        } else if (tex == 'E') {
+//            a = 5;
+//        } else if (tex == 'F') {
+//            a = 6;
+//        }
+//
+//        return a;
+//    }
 
     int getPoint(int cl, char grade) {
         int tcp = 0;
@@ -255,12 +466,13 @@ public class GPAActivity extends AppCompatActivity {
 
     void enab(boolean val) {
 //        finish.setEnabled(val);
+//        back.setEnabled(val);
+//        back.setBackgroundColor(getResources().getColor(R.color.gray));
+//        back.setTextColor(getResources().getColor(R.color.colorPrimary));
         next.setEnabled(val);
-        back.setEnabled(val);
         next.setBackgroundColor(getResources().getColor(R.color.gray));
         next.setTextColor(getResources().getColor(R.color.colorPrimary));
-        back.setBackgroundColor(getResources().getColor(R.color.gray));
-        back.setTextColor(getResources().getColor(R.color.colorPrimary));
+
         cour.setEnabled(val);
         uni.setEnabled(val);
         spinner1.setEnabled(val);

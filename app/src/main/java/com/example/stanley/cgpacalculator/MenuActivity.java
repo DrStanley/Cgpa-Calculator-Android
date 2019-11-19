@@ -1,6 +1,7 @@
 package com.example.stanley.cgpacalculator;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,6 +43,7 @@ public class MenuActivity extends AppCompatActivity {
     private MyPager myPager;
     String name;
     Button cal;
+    private ProgressDialog npd;
 
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
@@ -62,6 +66,7 @@ public class MenuActivity extends AppCompatActivity {
         handler = new Handler();
         handler.postDelayed(runnable, 1000);
         runnable.run();
+        npd = new ProgressDialog(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -89,6 +94,36 @@ public class MenuActivity extends AppCompatActivity {
                 }
             }
         });
+
+        NavigationView nV = findViewById(R.id.nav_view);
+        nV.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.hep:
+                        return true;
+                    case R.id.profile:
+                        startActivity(new Intent(getApplicationContext(),ProfileActivity.class));
+                        return true;
+                    case R.id.result:
+                        startActivity(new Intent(getApplicationContext(),ResultsActivity.class));
+                        return true;
+                    case R.id.cgpa:
+                        startActivity(new Intent(getApplicationContext(),ViewGPAActivity.class).putExtra("aha", name));
+                        return true;
+                    case R.id.logout:
+                        FirebaseAuth.getInstance().signOut();
+                        finish();
+                        return true;
+                }
+                return true;
+            }
+        });
+
+        npd.setMessage("Loading Please wait...");
+        npd.show();
+        npd.setCanceledOnTouchOutside(false);
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -132,7 +167,7 @@ public class MenuActivity extends AppCompatActivity {
                         Bitmap bb = decodeFromFirebaseBase64(img);
                         h_img.setImageBitmap(bb);
                         h_txt.setText(aha);
-
+                        npd.dismiss();
                     }
 
                 } catch (Exception e) {
@@ -200,16 +235,19 @@ public class MenuActivity extends AppCompatActivity {
         handler.removeCallbacks(runnable);
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 //        int id = item.getItemId();
 //        switch (id) {
 //            case android.R.id.home:
 //                finish();
 //                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+//        }\
+        if (barDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 
 }

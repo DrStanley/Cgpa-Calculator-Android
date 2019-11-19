@@ -5,13 +5,13 @@
         android:icon="@drawable/ic_person_black_24dp"
         android:title="Profile" />
     <item
-        android:id="@+id/history"
+        android:id="@+id/result"
         android:icon="@drawable/ic_trending_up_black_24dp"
         android:title="Results" />
     <item
         android:id="@+id/cgpa"
         android:icon="@drawable/ic_star_black_24dp"
-        android:title="Current CGPA" />
+        android:title="View Current CGPA" />
     <item
         android:id="@+id/hep"
         android:icon="@drawable/ic_help_outline_black_24dp"

@@ -24,7 +24,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
                     android:layout_weight="3"
+                    android:background="#ccc"
                     android:orientation="horizontal">
 
                     <TextView
@@ -51,14 +53,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
                     android:layout_weight="3"
+                    android:background="#ccc"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Year (Level) "
+                        android:text="Year (Level): "
                         android:textColor="@color/colorPrimary"
                         android:textSize="20sp" />
 
@@ -76,14 +80,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
                     android:layout_weight="3"
+                    android:background="#ccc"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Semester "
+                        android:text="Semester: "
                         android:textColor="@color/colorPrimary"
                         android:textSize="20sp" />
 
@@ -102,6 +108,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="45dp"
+                android:background="#ccc"
                 android:orientation="horizontal">
 
                 <com.rengwuxian.materialedittext.MaterialEditText
@@ -156,18 +163,18 @@
                 android:layout_marginBottom="30dp"
                 android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/previous"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/back4"
-                    android:text="Back"
-                    android:textAlignment="center"
-                    android:textAppearance="@android:style/TextAppearance.DeviceDefault"
-                    android:textColor="#fff"
-                    android:textColorHint="#ffff"
-                    app:met_floatingLabel="normal" />
+                <!--                <Button-->
+                <!--                    android:id="@+id/previous"-->
+                <!--                    android:layout_width="0dp"-->
+                <!--                    android:layout_height="match_parent"-->
+                <!--                    android:layout_weight="1"-->
+                <!--                    android:background="@drawable/back4"-->
+                <!--                    android:text="Back"-->
+                <!--                    android:textAlignment="center"-->
+                <!--                    android:textAppearance="@android:style/TextAppearance.DeviceDefault"-->
+                <!--                    android:textColor="#fff"-->
+                <!--                    android:textColorHint="#ffff"-->
+                <!--                    app:met_floatingLabel="normal" />-->
 
                 <TextView
                     android:id="@+id/count"
