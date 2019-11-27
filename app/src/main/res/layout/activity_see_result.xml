@@ -186,7 +186,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/bottom_text_size"
-                android:background="#ccc"
                 android:orientation="horizontal">
 
                 <ListView

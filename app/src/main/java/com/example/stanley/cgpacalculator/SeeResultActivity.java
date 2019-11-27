@@ -1,9 +1,7 @@
 package com.example.stanley.cgpacalculator;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,7 +36,7 @@ public class SeeResultActivity extends AppCompatActivity {
     List<String> grade;
     List<String> unit;
     ArrayAdapter<String> adapter1, adapter2, adapter3;
-
+    String sem, lev,ash1,ash2,ash3;
 
     TextView textViewtcl, textViewtgp, textViewgpa, textViewNoCourse, textViewHonor;
 
@@ -48,8 +46,8 @@ public class SeeResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_see_result);
-        String sem = getIntent().getStringExtra("semester");
-        String lev = getIntent().getStringExtra("level");
+        sem = getIntent().getStringExtra("semester");
+        lev = getIntent().getStringExtra("level");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(lev + "level " + sem);
 
@@ -91,8 +89,8 @@ public class SeeResultActivity extends AppCompatActivity {
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue() == null) {
-                        Toast.makeText(SeeResultActivity.this, "No Result Yet ", Toast.LENGTH_SHORT).show();
+                    if (dataSnapshot.getValue() == null || dataSnapshot.exists()) {
+                        Toast.makeText(SeeResultActivity.this, "No Result Yet For Selected Semester ", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                     tcl = dataSnapshot.child("TCL").getValue(Integer.class);
@@ -125,8 +123,47 @@ public class SeeResultActivity extends AppCompatActivity {
             databaseReference2.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    String ash = dataSnapshot.getValue(String.class);
-                    course.add(ash);
+                     ash1 = dataSnapshot.getValue(String.class);
+
+
+                    databaseReference3 = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
+                            .child("Results").child(lev).child(sem).child("grades");
+                    databaseReference3.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                             ash2 = dataSnapshot.getValue(String.class);
+                            course.add(ash1+"\t\t"+ash2);
+//                            grade.add(ash2);
+                            adapter1.notifyDataSetChanged();
+
+
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            adapter1.notifyDataSetChanged();
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+
                     adapter1.notifyDataSetChanged();
                 }
 
@@ -192,7 +229,7 @@ public class SeeResultActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     int ash = dataSnapshot.getValue(Integer.class);
-                    unit.add(""+ash);
+                    unit.add("" + ash);
                     adapter1.notifyDataSetChanged();
                 }
 
@@ -218,78 +255,74 @@ public class SeeResultActivity extends AppCompatActivity {
             });
 
 
-            textViewUnits.setOnScrollListener(new AbsListView.OnScrollListener() {
-                private int mLastFirstVisibleItem;
-
-                @Override
-                public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                    if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-
-                        textViewUnits.setEnabled(true);
-                        Log.i("a", "scrolling stopped...");
-                    }
-
-                }
-
-                @Override
-                public void onScroll(AbsListView view, int firstVisibleItem,
-                                     int visibleItemCount, int totalItemCount) {
-
-                    textViewUnits.setEnabled(false);
-
-
-                }
-            });
-            txtViewCourses.setOnScrollListener(new AbsListView.OnScrollListener() {
-                private int mLastFirstVisibleItem;
-
-                @Override
-                public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                    if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-
-                        txtViewCourses.setEnabled(true);
-                        Log.i("a", "scrolling stopped...");
-                    }
-
-                }
-
-                @Override
-                public void onScroll(AbsListView view, int firstVisibleItem,
-                                     int visibleItemCount, int totalItemCount) {
-
-                    txtViewCourses.setEnabled(false);
-
-
-                }
-            });
-            textViewGrades.setOnScrollListener(new AbsListView.OnScrollListener() {
-                private int mLastFirstVisibleItem;
-
-                @Override
-                public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                    if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                        textViewGrades.setEnabled(true);
-                        Log.i("a", "scrolling stopped...");
-                    }
-
-                }
-
-                @Override
-                public void onScroll(AbsListView view, int firstVisibleItem,
-                                     int visibleItemCount, int totalItemCount) {
-
-                    textViewGrades.setEnabled(false);
-
-
-                }
-            });
-
-
-
-
+//            textViewUnits.setOnScrollListener(new AbsListView.OnScrollListener() {
+//                private int mLastFirstVisibleItem;
+//
+//                @Override
+//                public void onScrollStateChanged(AbsListView view, int scrollState) {
+//
+//                    if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+//
+//                        textViewUnits.setEnabled(true);
+//                        Log.i("a", "scrolling stopped...");
+//                    }
+//
+//                }
+//
+//                @Override
+//                public void onScroll(AbsListView view, int firstVisibleItem,
+//                                     int visibleItemCount, int totalItemCount) {
+//
+//                    textViewUnits.setEnabled(false);
+//
+//
+//                }
+//            });
+//            txtViewCourses.setOnScrollListener(new AbsListView.OnScrollListener() {
+//                private int mLastFirstVisibleItem;
+//
+//                @Override
+//                public void onScrollStateChanged(AbsListView view, int scrollState) {
+//
+//                    if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+//
+//                        txtViewCourses.setEnabled(true);
+//                        Log.i("a", "scrolling stopped...");
+//                    }
+//
+//                }
+//
+//                @Override
+//                public void onScroll(AbsListView view, int firstVisibleItem,
+//                                     int visibleItemCount, int totalItemCount) {
+//
+//                    txtViewCourses.setEnabled(false);
+//
+//
+//                }
+//            });
+//            textViewGrades.setOnScrollListener(new AbsListView.OnScrollListener() {
+//                private int mLastFirstVisibleItem;
+//
+//                @Override
+//                public void onScrollStateChanged(AbsListView view, int scrollState) {
+//
+//                    if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+//                        textViewGrades.setEnabled(true);
+//                        Log.i("a", "scrolling stopped...");
+//                    }
+//
+//                }
+//
+//                @Override
+//                public void onScroll(AbsListView view, int firstVisibleItem,
+//                                     int visibleItemCount, int totalItemCount) {
+//
+//                    textViewGrades.setEnabled(false);
+//
+//
+//                }
+//            });
 
         } catch (Exception e) {
             Toast.makeText(this, "Semester is not Available", Toast.LENGTH_LONG).show();
@@ -301,14 +334,14 @@ public class SeeResultActivity extends AppCompatActivity {
     String hon(double gp) {
         String honor = "";
         if (gp >= 4.5) {
-            honor = "First Class Honor";
+            honor = "First Class";
         } else if (gp >= 3.5) {
-            honor = "Second Class Upper Honor";
+            honor = "Second Class Upper";
 
         } else if (gp >= 2.5) {
-            honor = "Second Class Lower Honor";
+            honor = "Second Class Lower";
         } else if (gp >= 1.5) {
-            honor = "Third Class Honor";
+            honor = "Third Class";
         } else {
             honor = "Pass";
 

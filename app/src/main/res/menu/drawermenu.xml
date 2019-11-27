@@ -13,6 +13,10 @@
         android:icon="@drawable/ic_star_black_24dp"
         android:title="View Current CGPA" />
     <item
+        android:id="@+id/news"
+        android:icon="@drawable/ic_perm_device_information_black_24dp"
+        android:title="School News" />
+    <item
         android:id="@+id/hep"
         android:icon="@drawable/ic_help_outline_black_24dp"
         android:title="Help" />

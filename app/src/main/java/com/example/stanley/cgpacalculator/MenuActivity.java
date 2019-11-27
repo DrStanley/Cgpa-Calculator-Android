@@ -111,6 +111,9 @@ public class MenuActivity extends AppCompatActivity {
                     case R.id.cgpa:
                         startActivity(new Intent(getApplicationContext(),ViewGPAActivity.class).putExtra("aha", name));
                         return true;
+                    case R.id.news:
+                        startActivity(new Intent(getApplicationContext(), NewsActivity.class));
+                        return true;
                     case R.id.logout:
                         FirebaseAuth.getInstance().signOut();
                         finish();

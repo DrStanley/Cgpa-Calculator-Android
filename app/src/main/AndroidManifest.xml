@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SeeResultActivity"></activity>
+        <activity android:name=".NewsActivity"></activity>
+        <activity android:name=".SeeResultActivity" />
         <activity android:name=".ResultsActivity" />
         <activity android:name=".ViewGPAActivity" />
         <activity android:name=".ProfileActivity" />

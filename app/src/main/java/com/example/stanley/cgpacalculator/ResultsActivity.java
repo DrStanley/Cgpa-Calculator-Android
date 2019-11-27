@@ -129,8 +129,13 @@ public class ResultsActivity extends AppCompatActivity {
 
                     }
 
-                    startActivity(new Intent(getApplicationContext(), SeeResultActivity.class).putExtra("semester", semester)
-                            .putExtra("level", lev));
+                  try {
+                      startActivity(new Intent(getApplicationContext(), SeeResultActivity.class).putExtra("semester", semester)
+                              .putExtra("level", lev));
+                  }catch (Exception e){
+                      Toast.makeText(ResultsActivity.this, "No Result Yet ", Toast.LENGTH_SHORT).show();
+
+                  }
 
 //                Toast.makeText(ResultsActivity.this, semester + " ", Toast.LENGTH_SHORT).show();
 
