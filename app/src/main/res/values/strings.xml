@@ -10,4 +10,30 @@
     <string name="forgot_password">RESET PASSWORD</string>
     <string name="register">REGISTER</string>
     <string name="phone_number">Phone number</string>
+    <string name="title_activity_help">HelpActivity</string>
+    <string name="large_text">
+
+        "Calculate GPA\n\n"
+        "This app calculates Users GPA based on the input by the User."
+        "When the app is lunched and user is logged in he/she would click 'Calculate G.P.A' button"
+        "which opens the calculator page.\n"
+        "The Student is required to select the year(Level) and semester of the result to be calcuated.\n"
+        "In the Course section Student are to type the course codes, unit section is for the credit load of the"
+        "course enter in the course section. Then the grade of the course is to be selected.\n"
+        "The '+' button is to enable Users add multiple course one after the other by clicking it.\n"
+        "If error is made in the entry User can click the 'RESET' button to start Afresh.\n"
+        "After the entry, User can now press 'Calculate' button to view their GPA. "
+        "The 'Save' button will show after viewing the GPA, which will enable user save calculated results for later viewing.\n"
+        Note: Any result saved twice will alter your account and CGPA and cannot be reversed."
+        "Contact the admin from above for a solution.\n"
+        "Viewing Results\n"
+        "The Results in the sub-menu allows user view saved results based on the levels and the semester."
+        "The App calculates CGPA based on the result Uploaded using the standard format. "
+        "The CGPA is calculated using all the courses and grades uploaded i.e any mistake in any result will affect your CGPA.\n"
+        "If a mistake is seen on a semester, one can delete the semester and Upload the corrected one."
+    </string>
+    <string name="banner_ad_unit_id">ca-app-pub-6031201392576267/7131019360</string>
+    <string name="action_settings">Settings</string>
+    <string name="how_the_app_works">How the APP Works</string>
+    <string name="title_activity_mia">MiaActivity</string>
 </resources>

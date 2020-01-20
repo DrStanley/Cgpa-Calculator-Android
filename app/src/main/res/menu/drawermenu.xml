@@ -17,9 +17,17 @@
         android:icon="@drawable/ic_perm_device_information_black_24dp"
         android:title="School News" />
     <item
+        android:id="@+id/faq"
+        android:icon="@drawable/ic_question_answer_black_24dp"
+        android:title="FAQ" />
+    <item
         android:id="@+id/hep"
         android:icon="@drawable/ic_help_outline_black_24dp"
         android:title="Help" />
+    <item
+        android:id="@+id/feedback"
+        android:icon="@drawable/ic_headset_mic_black_24dp"
+        android:title="Feedback" />
     <item
         android:id="@+id/logout"
         android:icon="@drawable/ic_exit_to_app_black_24dp"

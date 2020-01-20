@@ -24,6 +24,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.stanley.cgpacalculator.FAQ.FAQActivity;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -45,11 +52,14 @@ public class MenuActivity extends AppCompatActivity {
     Button cal;
     private ProgressDialog npd;
 
+//    private static final String TAG = "MenuActivity";
+    private AdView mAdView;
+
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
 
-    private static final long SLIDER_TIMER = 2000; // change slider interval
+    private static final long SLIDER_TIMER = 3000; // change slider interval
     private int currentPage = 0; // this will tell us the current page available on the view pager
     // currentPage variable
     private boolean isCountDownTimerActive = false; // let the timer start if and only if it has completed previous task
@@ -63,10 +73,61 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        MobileAds.initialize(this,"ca-app-pub-6031201392576267~7452289858");
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+//                Toast.makeText(MenuActivity.this, "Initialized", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         handler = new Handler();
         handler.postDelayed(runnable, 1000);
         runnable.run();
         npd = new ProgressDialog(this);
+
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+//                Toast.makeText(MenuActivity.this, "Loaded", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                // Code to be executed when an ad request fails.
+//                Toast.makeText(MenuActivity.this, "Error: "+errorCode, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+
+            @Override
+            public void onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+            }
+
+            @Override
+            public void onAdClosed() {
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
+                Toast.makeText(MenuActivity.this, "Welcome Back!", Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -90,7 +151,7 @@ public class MenuActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(name)) {
                     Toast.makeText(MenuActivity.this, "Poor Network Please wait and Retry", Toast.LENGTH_SHORT).show();
                 } else {
-                    startActivity(new Intent(MenuActivity.this, GPAActivity.class).putExtra("aha", name));
+                    startActivity(new Intent(MenuActivity.this, MiaActivity.class).putExtra("aha", name));
                 }
             }
         });
@@ -100,19 +161,26 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.hep:
-                        return true;
                     case R.id.profile:
                         startActivity(new Intent(getApplicationContext(),ProfileActivity.class));
                         return true;
                     case R.id.result:
                         startActivity(new Intent(getApplicationContext(),ResultsActivity.class));
                         return true;
+                    case R.id.faq:
+                        startActivity(new Intent(getApplicationContext(), FAQActivity.class));
+                        return true;
                     case R.id.cgpa:
                         startActivity(new Intent(getApplicationContext(),ViewGPAActivity.class).putExtra("aha", name));
                         return true;
+                    case R.id.feedback:
+                        startActivity(new Intent(getApplicationContext(), FeedBackActivity.class).putExtra("aha", name));
+                        return true;
                     case R.id.news:
                         startActivity(new Intent(getApplicationContext(), NewsActivity.class));
+                        return true;
+                    case R.id.hep:
+                        startActivity(new Intent(getApplicationContext(), HelpActivity.class));
                         return true;
                     case R.id.logout:
                         FirebaseAuth.getInstance().signOut();
@@ -142,8 +210,12 @@ public class MenuActivity extends AppCompatActivity {
                     currentPage = 2;
                 } else if (position == 3) {
                     currentPage = 3;
-                } else {
+                }  else if (position == 4) {
                     currentPage = 4;
+                }else if (position == 5) {
+                    currentPage = 5;
+                } else {
+                    currentPage = 6;
                 }
             }
 
@@ -207,7 +279,7 @@ public class MenuActivity extends AppCompatActivity {
                 automateSlider();
             }
             handler.postDelayed(runnable, 1000);
-            // our runnable should keep running for every 1000 milliseconds (1 seconds)
+            // the runnable should keep running for every 1000 milliseconds (1 seconds)
         }
     };
 
@@ -240,12 +312,6 @@ public class MenuActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        switch (id) {
-//            case android.R.id.home:
-//                finish();
-//                return true;
-//        }\
         if (barDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }

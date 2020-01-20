@@ -1,16 +1,15 @@
 package com.example.stanley.cgpacalculator;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +19,7 @@ public class NewsActivity extends AppCompatActivity {
     String address = "https://www.funai.edu.ng/news";
     WebView webView;
     ProgressBar progressBar;
+    private ProgressDialog npd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +28,14 @@ public class NewsActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("News");
+        npd = new ProgressDialog(this);
 
         webView = findViewById(R.id.webView);
         progressBar.setMax(100);
-        progressBar.setProgress(10);
-
+        progressBar.setProgress(20);
+        npd.setMessage("Loading Please wait...");
+        npd.show();
+        npd.setCanceledOnTouchOutside(false);
         webView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChangeed(WebView view, int progress) {
                 progressBar.setProgress(progress);
@@ -50,6 +53,7 @@ public class NewsActivity extends AppCompatActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 progressBar.setVisibility(View.VISIBLE);
+                npd.dismiss();
                 progressBar.setProgress(50);
                 setTitle("Loading");
 //                if (progress == 100) {
@@ -58,17 +62,13 @@ public class NewsActivity extends AppCompatActivity {
 //                }
             }
 
-            @Override
-            public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
-                super.onUnhandledKeyEvent(view, event);
-            }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                progressBar.setProgress(50);
+                progressBar.setProgress(100);
                 progressBar.setVisibility(View.GONE);
-                    setTitle(view.getTitle());
+                setTitle(view.getTitle());
 
             }
 
@@ -95,15 +95,16 @@ public class NewsActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (webView.canGoBack()) {
             webView.goBack();
+        } else {
+            super.onBackPressed();
         }
-        super.onBackPressed();
-    }
+            }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
+            public boolean onOptionsItemSelected (MenuItem item){
+                int id = item.getItemId();
+                if (id == android.R.id.home) {
             finish();
+                }
+                return super.onOptionsItemSelected(item);
+            }
         }
-        return super.onOptionsItemSelected(item);
-    }
-}

@@ -27,11 +27,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -40,14 +35,9 @@ public class LoginActivity extends AppCompatActivity {
     CheckBox remem;
     EditText editTextEm, editTextPa;
     FirebaseAuth firebaseAuth;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
     private ProgressDialog pd;
-    private TextView paswrd;
-    private TextView regis;
     private String em;
     private String pa;
-    String admin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,27 +138,14 @@ public class LoginActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.clear();
                         }
+//                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
 
                         editTextPa.setText(null);
-                        firebaseDatabase = FirebaseDatabase.getInstance();
-                        databaseReference = firebaseDatabase.getReference();
-                        databaseReference = firebaseDatabase.getReference("Users").child(user.getUid()).child("Profile");
-                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                admin = dataSnapshot.child("type").getValue(String.class);
-                                pd.dismiss();
+                        Toast.makeText(LoginActivity.this, "Login successful!!", Toast.LENGTH_SHORT).show();
 
-                                Toast.makeText(LoginActivity.this, "Login successful!!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(LoginActivity.this, MenuActivity.class));
+                        pd.dismiss();
 
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
+                        startActivity(new Intent(LoginActivity.this, MenuActivity.class));
 
                     } else {
                         pd.dismiss();

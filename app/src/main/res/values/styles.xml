@@ -6,7 +6,14 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorSecondary">#ffff</item>
+        <item name="android:color">#ffff</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault</item>
+        <item name="android:textStyle">bold</item>
+
+
     </style>
+
     <style name="Nave">
         <item name="android:textColor">#ffff</item>
         <item name="android:background">@color/colorPrimary</item>
@@ -16,5 +23,24 @@
         <item name="android:textStyle">bold</item>
         <item name="android:toolbarStyle">@android:style/ThemeOverlay.Material.ActionBar</item>
         <item name="android:textColorSecondary">#ffff</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorSecondary">#ffff</item>
+        <item name="android:color">#ffff</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorSecondary">#ffff</item>
+        <item name="android:color">#ffff</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>

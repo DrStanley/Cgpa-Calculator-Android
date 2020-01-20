@@ -3,7 +3,6 @@ package com.example.stanley.cgpacalculator;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -17,12 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class GPAActivity extends AppCompatActivity {
 
@@ -43,13 +43,15 @@ public class GPAActivity extends AppCompatActivity {
     ArrayList<String> list3 = new ArrayList<String>();
     List<String> course;
     List<String> grade;
+    List<String> level;
     List<Integer> unit;
     List<Integer> point;
     private ProgressDialog npd;
     Spinner spinner1, spinner3, spinner2;
     TextView textViewName, textViewNum, d, e, f;
-    int a;                long chi;
-    int tcl=0,tgp=0,noCO=0;
+    int a;
+    long chi;
+    int tcl = 0, tgp = 0, noCO = 0;
 
     double totalUnit, totatPoint;
     Button next, finish;
@@ -80,6 +82,7 @@ public class GPAActivity extends AppCompatActivity {
         a = 0;
         unit = new ArrayList<>();
         point = new ArrayList<>();
+        level = new ArrayList<>();
         course = new ArrayList<>();
         grade = new ArrayList<>();
 
@@ -90,7 +93,7 @@ public class GPAActivity extends AppCompatActivity {
         databaseReference = firebaseDatabase.getReference();
         databaseReference2 = firebaseDatabase.getReference();
         databaseReference3 = firebaseDatabase.getReference();
-        databaseReference2 = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
+       databaseReference2 = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
                 .child("Results").child("CGPA");
 
         adds();
@@ -117,7 +120,7 @@ public class GPAActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
-                    if (dataSnapshot.getValue()!=null) {
+                    if (dataSnapshot.getValue() != null) {
                         tcl = dataSnapshot.child("TCL").getValue(Integer.class);
                         tgp = dataSnapshot.child("TGP").getValue(Integer.class);
                         noCO = dataSnapshot.child("Total_courses").getValue(Integer.class);
@@ -137,11 +140,43 @@ public class GPAActivity extends AppCompatActivity {
 
         databaseReference3 = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
                 .child("Results").child("Levels");
+
         databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 chi = dataSnapshot.getChildrenCount();
-                Toast.makeText(GPAActivity.this, ""+chi, Toast.LENGTH_SHORT).show();
+                databaseReference3.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        if (dataSnapshot.getValue() == null) {
+                            Toast.makeText(GPAActivity.this, "No Result Yet", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        String as = dataSnapshot.getValue(String.class);
+                        level.add(as);
+
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
             }
 
             @Override
@@ -160,9 +195,9 @@ public class GPAActivity extends AppCompatActivity {
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (finish.getText().equals("Finished")) {
+                if (finish.getText().equals("Calculate")) {
                     see();
-                } else {
+                } else if (finish.getText().equals("Save")) {
                     saveResult();
                 }
             }
@@ -172,19 +207,19 @@ public class GPAActivity extends AppCompatActivity {
 
     private void saveResult() {
         databaseReference = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
-                .child("Results").child(spinner1.getSelectedItem().toString()+"00")
+                .child("Results").child(spinner1.getSelectedItem().toString() + "00")
                 .child(spinner2.getSelectedItem().toString());
 
-        Map<String, Object> updates = new HashMap<String,Object>();
+        Map<String, Object> updates = new HashMap<String, Object>();
         npd.setMessage("Saving Result Please wait...");
         npd.show();
         npd.setCanceledOnTouchOutside(false);
 
-        updates.put("courses",course );
+        updates.put("courses", course);
         updates.put("units", unit);
         updates.put("grades", grade);
         updates.put("TCL", totalUnit);
-        updates.put("Level", spinner1.getSelectedItem().toString()+"00");
+        updates.put("Level", spinner1.getSelectedItem().toString() + "00");
         updates.put("TGP", totatPoint);
         updates.put("Tcourses", a);
         updates.put("grades", grade);
@@ -193,31 +228,36 @@ public class GPAActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
 
 
-                chi++;
-                Map<String, Object> updates3 = new HashMap<String, Object>();
-                updates3.put(chi+"", spinner1.getSelectedItem().toString()+"00");
-                databaseReference3.updateChildren(updates3).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        npd.dismiss();
-                        AlertDialog alertDialog = new AlertDialog.Builder(GPAActivity.this).create();
-                        alertDialog.setTitle("Alert");
-                        alertDialog.setIcon(R.drawable.ic_error_black_24dp);
-                        alertDialog.setMessage("Error Saving: " + e.getMessage() + "\nCause: " + e.getCause());
-                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        alertDialog.show();
-                    }
-                });
+//                chi++;
+                if (level.contains(spinner1.getSelectedItem().toString() + "00")) {
 
-                tcl +=totalUnit;
-                tgp +=totatPoint;
-                noCO +=a;
-                Toast.makeText(GPAActivity.this, tcl+" and "+tgp, Toast.LENGTH_SHORT).show();
+                } else {
+
+                    Map<String, Object> updates3 = new HashMap<String, Object>();
+                    updates3.put(chi + "", spinner1.getSelectedItem().toString() + "00");
+                    databaseReference3.updateChildren(updates3).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            npd.dismiss();
+                            AlertDialog alertDialog = new AlertDialog.Builder(GPAActivity.this).create();
+                            alertDialog.setTitle("Alert");
+                            alertDialog.setIcon(R.drawable.ic_error_black_24dp);
+                            alertDialog.setMessage("Error Saving: " + e.getMessage() + "\nCause: " + e.getCause());
+                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            alertDialog.show();
+                        }
+                    });
+                }
+
+                tcl += totalUnit;
+                tgp += totatPoint;
+                noCO += a;
+//                Toast.makeText(GPAActivity.this, tcl + " and " + tgp, Toast.LENGTH_SHORT).show();
 
                 Map<String, Object> updates2 = new HashMap<String, Object>();
                 updates2.put("TCL", tcl);
@@ -375,6 +415,35 @@ public class GPAActivity extends AppCompatActivity {
             Toast.makeText(this, "Please Select the Semester", Toast.LENGTH_SHORT).show();
             spinner3.requestFocus();
             return;
+        }
+
+
+        if (!TextUtils.isEmpty(cour.getText().toString())) {
+            //email is empty
+//            Toast.makeText(this, "Please Enter the course code", Toast.LENGTH_SHORT).show();
+//            cour.setError("*Required");
+//            cour.requestFocus();
+            if (!TextUtils.isEmpty(uni.getText().toString())) {
+                //email is empty
+//                Toast.makeText(this, "Please Enter the course unit(CL)", Toast.LENGTH_SHORT).show();
+//                uni.setError("*Required");
+//                uni.requestFocus();
+                if (!spinner3.getSelectedItem().toString().equals("Grade")) {
+                    //email is empty
+//                    Toast.makeText(this, "Please Select the course Grade", Toast.LENGTH_SHORT).show();
+//                    spinner3.requestFocus();
+
+                    a = a + 1;
+                    textViewNum.setText(Integer.toString(a));
+
+                    course.add(cour.getText().toString());
+                    grade.add(spinner3.getSelectedItem().toString());
+                    unit.add(Integer.parseInt(uni.getText().toString()));
+                    cour.setText(null);
+                    uni.setText(null);
+                    spinner3.setSelection(0);
+                }
+            }
         }
 
         for (int i = 0; i < grade.size(); i++) {

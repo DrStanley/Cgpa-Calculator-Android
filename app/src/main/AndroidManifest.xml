@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.stanley.cgpacalculator">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -11,8 +13,25 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".NewsActivity"></activity>
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".MiaActivity"
+            android:label="@string/title_activity_mia"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".FeedBackActivity" />
+        <activity android:name=".FAQ.AskQActivity" />
+        <activity android:name=".FAQ.FAQActivity" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6031201392576267~7452289858" />
+
+        <activity
+            android:name=".HelpActivity"
+            android:label="@string/title_activity_help"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".NewsActivity" />
         <activity android:name=".SeeResultActivity" />
         <activity android:name=".ResultsActivity" />
         <activity android:name=".ViewGPAActivity" />

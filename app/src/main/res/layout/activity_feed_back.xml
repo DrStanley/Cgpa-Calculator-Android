@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FeedBackActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/feedID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:text="ID"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault"
+            android:textColor="@color/colorPrimary"
+            app:met_floatingLabel="normal"
+            app:met_textColor="@color/colorPrimary"
+            app:met_textColorHint="@color/colorPrimary" />
+
+        <Spinner
+            android:id="@+id/feed_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/colorPrimary" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/feedDetails"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:hint="Text"
+
+            android:inputType="textAutoCorrect|textAutoComplete|textCapSentences|textMultiLine"
+            android:scrollbars="vertical"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault"
+            android:textColor="@color/colorPrimary"
+            app:met_floatingLabel="normal"
+            app:met_textColor="@color/colorPrimary"
+            app:met_textColorHint="@color/colorPrimary" />
+
+        <Button
+            android:id="@+id/sendFeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:background="@drawable/button"
+            android:text="Send"
+            android:textColor="#FFF"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

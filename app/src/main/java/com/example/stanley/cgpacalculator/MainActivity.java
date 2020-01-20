@@ -1,7 +1,5 @@
 package com.example.stanley.cgpacalculator;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,9 +7,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class MainActivity extends AppCompatActivity {
 
-    private long timeout = 3500;
+    private long timeout = 3300;
     ImageView imageView;
 
     @Override

@@ -27,7 +27,7 @@ public class MyPager extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View view = LayoutInflater.from(context).inflate(R.layout.pager_item, null);
-        ImageView imageView = (ImageView) view.findViewById(R.id.image);
+        ImageView imageView = view.findViewById(R.id.image);
         imageView.setImageDrawable(context.getResources().getDrawable(getImageAt(position)));
         container.addView(view);
         return view;
@@ -47,7 +47,7 @@ public class MyPager extends PagerAdapter {
     */
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 
     /*
@@ -63,15 +63,17 @@ public class MyPager extends PagerAdapter {
         switch (position) {
 
             case 0:
-                return R.drawable.img_one;
+                return R.drawable.me;
             case 1:
-                return R.drawable.gpa;
+                return R.drawable.se;
             case 2:
-                return R.drawable.koala;
+                return R.drawable.we;
             case 3:
-                return R.drawable.jellyfish;
+                return R.drawable.zee;
+            case 4:
+                return R.drawable.us;
             default:
-                return R.drawable.gpa;
+                return R.drawable.logocopy;
         }
     }
 
