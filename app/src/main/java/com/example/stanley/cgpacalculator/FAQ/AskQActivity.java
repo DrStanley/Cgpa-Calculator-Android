@@ -42,7 +42,7 @@ public class AskQActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
-        final String ids = "Fd_" + System.currentTimeMillis();
+        final String ids = "Qu_" + System.currentTimeMillis();
         databaseReference = firebaseDatabase.getReference("FAQ").child("Questions").child(ids);
         ask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +58,7 @@ public class AskQActivity extends AppCompatActivity {
                 npd.setMessage("Sending Question...");
                 npd.show();
                 npd.setCanceledOnTouchOutside(false);
-                insert.put("question", ques.getText().toString());
+                insert.put("question", ques.getText().toString().replace("?", ""));
                 insert.put("id", ids);
                 databaseReference.updateChildren(insert).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

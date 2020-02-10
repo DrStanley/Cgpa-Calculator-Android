@@ -15,10 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".FAQ.FAQanswerctivity"></activity>
         <activity
             android:name=".MiaActivity"
             android:label="@string/title_activity_mia"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".FeedBackActivity" />
         <activity android:name=".FAQ.AskQActivity" />
         <activity android:name=".FAQ.FAQActivity" />
@@ -36,7 +37,6 @@
         <activity android:name=".ResultsActivity" />
         <activity android:name=".ViewGPAActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".GPAActivity" />
         <activity android:name=".MenuActivity" />
         <activity android:name=".ResetPActivity" />
         <activity android:name=".RegisterActivity" />

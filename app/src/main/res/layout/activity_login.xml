@@ -72,8 +72,6 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/back"
-
                 android:baselineAligned="false"
                 app:passwordToggleTint="@color/colorPrimary"
                 app:passwordToggleEnabled="true"

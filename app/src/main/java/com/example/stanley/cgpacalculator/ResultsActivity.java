@@ -34,6 +34,7 @@ public class ResultsActivity extends AppCompatActivity {
     ProgressDialog pd;
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mDatabaseReference;
+    DatabaseReference mDatabaseReference2;
     FirebaseAuth firebaseAuth;
     ArrayList<String> levels;
     ArrayAdapter<String> adapter1;
@@ -111,7 +112,7 @@ public class ResultsActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                levels.remove(dataSnapshot.getValue()+" LEVEL");
+                levels.remove(dataSnapshot.getValue() + " LEVEL");
                 adapter1.setNotifyOnChange(true);
                 adapter1.notifyDataSetChanged();
             }
@@ -151,11 +152,30 @@ public class ResultsActivity extends AppCompatActivity {
                                 semester = "Second Semester";
 
                             }
+                            final View view = findViewById(android.R.id.content);
 
                             try {
+                                mDatabaseReference2 = mFirebaseDatabase.getReference("Users").child(firebaseAuth.getUid())
+                                        .child("Results").child(lev).child(semester);
+                                mDatabaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.getValue() == null) {
+                                            Snackbar.make(view, "No Result Yet For the Semester", Snackbar.LENGTH_LONG)
+                                                    .setAction("Action", null).show();
+                                        } else {
+                                            startActivity(new Intent(getApplicationContext(), SeeResultActivity.class)
+                                                    .putExtra("semester", semester)
+                                                    .putExtra("level", lev));
+                                        }
+                                    }
 
-                                startActivity(new Intent(getApplicationContext(), SeeResultActivity.class).putExtra("semester", semester)
-                                        .putExtra("level", lev));
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
                             } catch (Exception e) {
                                 Toast.makeText(ResultsActivity.this, "No Result Yet ", Toast.LENGTH_SHORT).show();
 

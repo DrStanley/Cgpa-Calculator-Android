@@ -1,11 +1,5 @@
 package com.example.stanley.cgpacalculator.FAQ;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,13 +8,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.example.stanley.cgpacalculator.MiaActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.stanley.cgpacalculator.R;
-import com.example.stanley.cgpacalculator.SeeResultActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -30,9 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FAQActivity extends AppCompatActivity {
 
@@ -41,6 +32,7 @@ public class FAQActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter1;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+    DatabaseReference databaseReference2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +43,12 @@ public class FAQActivity extends AppCompatActivity {
 
         listViewQ = findViewById(R.id.questions);
         ques = new ArrayList<>();
-        ques.add("Does the Number of courses change My GP to 6.0");
-
+        ques.add("Does the Number of courses change My GP");
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
         databaseReference = firebaseDatabase.getReference("FAQ").child("Questions");
         final View view = findViewById(android.R.id.content);
+        adapter1 = new ArrayAdapter<String>(this, R.layout.listv_iew, ques);
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -64,7 +56,6 @@ public class FAQActivity extends AppCompatActivity {
                 if (dataSnapshot.getValue() == null) {
                     Snackbar.make(view, "No Questions Yet", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
-                    return;
                 }
             }
 
@@ -79,15 +70,20 @@ public class FAQActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 String as = dataSnapshot.child("question").getValue(String.class);
                 ques.add(as);
+                adapter1.notifyDataSetChanged();
+
             }
 
             @Override
             public void onChildChanged(@NonNull com.google.firebase.database.DataSnapshot dataSnapshot, @Nullable String s) {
+                adapter1.setNotifyOnChange(true);
+                adapter1.notifyDataSetChanged();
             }
 
             @Override
             public void onChildRemoved(@NonNull com.google.firebase.database.DataSnapshot dataSnapshot) {
-
+                adapter1.setNotifyOnChange(true);
+                adapter1.notifyDataSetChanged();
             }
 
             @Override
@@ -102,13 +98,37 @@ public class FAQActivity extends AppCompatActivity {
         });
 
 
-        adapter1 = new ArrayAdapter<String>(this, R.layout.listv_iew, ques);
         // Apply the adapter to the listviews
         listViewQ.setAdapter(adapter1);
+        adapter1.notifyDataSetChanged();
+
+
         listViewQ.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(FAQActivity.this, "No Answer Yet..", Toast.LENGTH_SHORT).show();
+            public void onItemClick(final AdapterView<?> parent, final View view, final int position, long id) {
+                final String val = (String) parent.getItemAtPosition(position);
+
+                databaseReference2 = firebaseDatabase.getReference("FAQ").child("Answers").child(val);
+                databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue() == null) {
+                            final View view = findViewById(android.R.id.content);
+                            Snackbar.make(view, "No Answer Yet..", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+
+                        } else {
+                            startActivity(new Intent(FAQActivity.this, FAQanswerctivity.class).putExtra("question", val));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
             }
         });
     }

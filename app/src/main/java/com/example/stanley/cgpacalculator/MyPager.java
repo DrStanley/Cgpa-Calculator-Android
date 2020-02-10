@@ -63,15 +63,15 @@ public class MyPager extends PagerAdapter {
         switch (position) {
 
             case 0:
-                return R.drawable.me;
+                return R.drawable.us;
             case 1:
-                return R.drawable.se;
+                return R.drawable.me;
             case 2:
                 return R.drawable.we;
             case 3:
                 return R.drawable.zee;
             case 4:
-                return R.drawable.us;
+                return R.drawable.se;
             default:
                 return R.drawable.logocopy;
         }

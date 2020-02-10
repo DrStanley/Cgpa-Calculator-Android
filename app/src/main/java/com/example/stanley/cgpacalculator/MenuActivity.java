@@ -294,7 +294,7 @@ public class MenuActivity extends AppCompatActivity {
             public void onFinish() {
                 int nextSlider = currentPage + 1;
 
-                if (nextSlider == 4) {
+                if (nextSlider == 5) {
                     nextSlider = 0; // if it's last Image, let it go to the first image
                 }
                 viewPager.setCurrentItem(nextSlider);
